@@ -26,3 +26,7 @@ def login():
     password = payload['password']
 
     return PEOPLE_HANDLER.checkLogin(email, password)
+
+@app.get('/get_ranking')
+def get_ranking():
+    return PEOPLE_HANDLER.getRanking()

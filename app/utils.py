@@ -33,23 +33,36 @@ class PeopleHander:
     def checkLogin(self, email, password) -> dict:
         password_hash: str = getHash(password)
 
-        sql_statement = f"""
+        sql_statement: str = f"""
             SELECT id FROM Person WHERE email='{email}' AND password_hash='{password_hash}'
         """
-        data = self.DB_HANDLER.executeSQL(sql_statement).fetchall()
+        data: list = self.DB_HANDLER.executeSQL(sql_statement).fetchall()
         if data == []:
             return {
                 "code": 401,
                 "message": "invalid login"
             }
-        else:
-            return {
-                "code": 200,
-                "message": "success",
-                "user_id": data[0][0]
-            }
-        
+        return {
+            "code": 200,
+            "message": "success",
+            "user_id": data[0][0]
+        }
+    
+    def getRanking(self) -> list:
 
+        sql_statement: str = """
+            SELECT id, last_name, first_name, points FROM Person ORDER BY points
+        """
+
+        data: list = self.DB_HANDLER.executeSQL(sql_statement).fetchall()
+        return [
+            {
+                "id": person_data[0],
+                "last_name": person_data[1],
+                "first_name": person_data[2],
+                "points": person_data[3],
+            } for person_data in data
+        ]
 
 # utils function 
 def getHash(input_string: str) -> str:
