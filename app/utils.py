@@ -19,13 +19,24 @@ class PeopleHander:
         self.DB_HANDLER = DbHandler()
 
     def createPerson(self, first_name, last_name, email, password, birthday) -> dict:
+        # check if email is already in use
+        check_email_sql = f"""
+            SELECT id FROM Person WHERE email='{email}'
+        """
+        existing_rows = self.DB_HANDLER.executeSQL(check_email_sql)
+        if existing_rows != []:
+            return {
+                "code": 403,
+                "message": "email already exists"
+            }
+
         id: str = getHash(f"{first_name}{last_name}{email}{birthday}")
         password_hash: str = getHash(password)
 
         sql_statement = f"""
             INSERT INTO Person (id, first_name, last_name, email, password_hash, birth_date, points, role)
             VALUES ('{id}', '{first_name}', '{last_name}', '{email}', '{password_hash}', '{birthday}', 0, 'user');
-            """
+        """
         self.DB_HANDLER.executeSQL(sql_statement)
 
         return {"code": 200, "message": "success"}

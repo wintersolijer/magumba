@@ -1,9 +1,9 @@
 curl -X POST http://localhost:5000/create_person \
 -H "Content-Type: application/json" \
 -d '{
-"first_name": "simon",
-"last_name": "simens",
-"email": "simon.simens@gmail.com",
+"first_name": "fred",
+"last_name": "crud",
+"email": "fred.crud@gmail.com",
 "password": "dasPassword",
-"birthday": "07.11.2001"
+"birthday": "13.04.1997"
 }'
