@@ -17,3 +17,12 @@ def create_person():
     birthday = payload['birthday']
 
     return PEOPLE_HANDLER.createPerson(first_name, last_name, email, password, birthday)
+
+@app.post('/login')
+def login():
+    payload = request.json
+
+    email = payload['email']
+    password = payload['password']
+
+    return PEOPLE_HANDLER.checkLogin(email, password)

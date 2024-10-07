@@ -22,14 +22,34 @@ class PeopleHander:
         id: str = getHash(f"{first_name}{last_name}{email}{birthday}")
         password_hash: str = getHash(password)
 
-
         sql_statement = f"""
             INSERT INTO Person (id, first_name, last_name, email, password_hash, birth_date, points, role)
             VALUES ('{id}', '{first_name}', '{last_name}', '{email}', '{password_hash}', '{birthday}', 0, 'user');
             """
         self.DB_HANDLER.executeSQL(sql_statement)
 
-        return {"code": "200", "message": "success"}
+        return {"code": 200, "message": "success"}
+
+    def checkLogin(self, email, password) -> dict:
+        password_hash: str = getHash(password)
+
+        sql_statement = f"""
+            SELECT id FROM Person WHERE email='{email}' AND password_hash='{password_hash}'
+        """
+        data = self.DB_HANDLER.executeSQL(sql_statement).fetchall()
+        if data == []:
+            return {
+                "code": 401,
+                "message": "invalid login"
+            }
+        else:
+            return {
+                "code": 200,
+                "message": "success",
+                "user_id": data[0][0]
+            }
+        
+
 
 # utils function 
 def getHash(input_string: str) -> str:
