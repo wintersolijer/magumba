@@ -1,9 +1,10 @@
 from flask import Flask
-from .utils import DbHandler, PeopleHander
+from .utils import DbHandler, PeopleHandler, QuestionHandler
 
 
 app = Flask(__name__)
 
-PEOPLE_HANDLER = PeopleHander()
+PEOPLE_HANDLER = PeopleHandler()
+QUESTION_HANDLER = QuestionHandler()
 
 from app import routes

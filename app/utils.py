@@ -14,11 +14,11 @@ class DbHandler:
         self.conn.commit()    
         return data
 
-class PeopleHander:
+class PeopleHandler:
     def __init__(self):
         self.DB_HANDLER = DbHandler()
 
-    def createPerson(self, first_name, last_name, email, password, birthday) -> dict:
+    def create_person(self, first_name, last_name, email, password, birthday) -> dict:
         # check if email is already in use
         check_email_sql = f"""
             SELECT id FROM Person WHERE email='{email}'
@@ -30,19 +30,19 @@ class PeopleHander:
                 "message": "email already exists"
             }
 
-        id: str = getHash(f"{first_name}{last_name}{email}{birthday}")
-        password_hash: str = getHash(password)
+        user_id: str = get_hash(f"{first_name}{last_name}{email}{birthday}")
+        password_hash: str = get_hash(password)
 
         sql_statement = f"""
             INSERT INTO Person (id, first_name, last_name, email, password_hash, birth_date, points, role)
-            VALUES ('{id}', '{first_name}', '{last_name}', '{email}', '{password_hash}', '{birthday}', 0, 'user');
+            VALUES ('{user_id}', '{first_name}', '{last_name}', '{email}', '{password_hash}', '{birthday}', 0, 'user');
         """
         self.DB_HANDLER.executeSQL(sql_statement)
 
         return {"code": 200, "message": "success"}
 
-    def checkLogin(self, email, password) -> dict:
-        password_hash: str = getHash(password)
+    def check_login(self, email, password) -> dict:
+        password_hash: str = get_hash(password)
 
         sql_statement: str = f"""
             SELECT id FROM Person WHERE email='{email}' AND password_hash='{password_hash}'
@@ -59,7 +59,7 @@ class PeopleHander:
             "user_id": data[0][0]
         }
     
-    def getRanking(self) -> list:
+    def get_ranking(self) -> list:
 
         sql_statement: str = """
             SELECT id, last_name, first_name, points FROM Person ORDER BY points
@@ -75,8 +75,46 @@ class PeopleHander:
             } for person_data in data
         ]
 
+class QuestionHandler:
+    def __init__(self):
+        self.DB_HANDLER = DbHandler()
+    
+    def add_question(self, question: str, answers: list, points: int):
+        """
+        adding the question
+        with the answers to the other things ...
+        """
+        question_id = get_hash(question)
+        
+        # adding the question
+        insert_question_sql = f"""
+            INSERT INTO Question (id, question_text, points)
+            VALUES ('{question_id}', '{question}', {points})
+        """
+
+        self.DB_HANDLER.executeSQL(insert_question_sql)
+
+        for answer_obj in answers:
+            is_correct = answer_obj['isTrue']
+            answer = answer_obj['answer']
+            answer_id = get_hash(answer)
+            explanation = ""
+
+            insert_answer_sql = f"""
+                INSERT INTO Answer (id, question_id, answer, is_correct, explanation)
+                VALUES ('{answer_id}', '{question_id}', '{answer_id}', '{is_correct}', '{explanation}')
+            """
+
+            self.DB_HANDLER.executeSQL(insert_answer_sql)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+
+
 # utils function 
-def getHash(input_string: str) -> str:
+def get_hash(input_string: str) -> str:
     hash_object = hashlib.sha256()
     hash_object.update(input_string.encode('utf-8'))
     return hash_object.hexdigest()
