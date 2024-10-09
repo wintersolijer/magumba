@@ -126,7 +126,7 @@ class QuestionHandler:
         question_data: tuple = all_questions_data[random.randint(0, size_questions-1)]
         question_id: str = question_data[0]
         question_text: str = question_data[1]
-        question_points = question_id[2]
+        question_points: int = int(question_data[2])
 
         select_question_answers: str = f"""
             SELECT answer, is_correct, explanation FROM Answer
@@ -146,7 +146,7 @@ class QuestionHandler:
             "points": question_points
         }
 
-# utils function 
+
 def get_hash(input_string: str) -> str:
     hash_object = hashlib.sha256()
     hash_object.update(input_string.encode('utf-8'))
