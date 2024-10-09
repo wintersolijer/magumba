@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import os
+import random
 
 class DbHandler:
     def __init__(self):
@@ -24,7 +25,8 @@ class PeopleHandler:
             SELECT id FROM Person WHERE email='{email}'
         """
         existing_rows = self.DB_HANDLER.executeSQL(check_email_sql)
-        if existing_rows != []:
+
+        if existing_rows.fetchall() != []:
             return {
                 "code": 403,
                 "message": "email already exists"
@@ -84,10 +86,10 @@ class QuestionHandler:
         adding the question
         with the answers to the other things ...
         """
-        question_id = get_hash(question)
+        question_id: str = get_hash(question)
         
         # adding the question
-        insert_question_sql = f"""
+        insert_question_sql: str = f"""
             INSERT INTO Question (id, question_text, points)
             VALUES ('{question_id}', '{question}', {points})
         """
@@ -97,12 +99,12 @@ class QuestionHandler:
         for answer_obj in answers:
             is_correct = answer_obj['isTrue']
             answer = answer_obj['answer']
-            answer_id = get_hash(answer)
+            answer_id = get_hash(answer + question_id)
             explanation = ""
 
             insert_answer_sql = f"""
                 INSERT INTO Answer (id, question_id, answer, is_correct, explanation)
-                VALUES ('{answer_id}', '{question_id}', '{answer_id}', '{is_correct}', '{explanation}')
+                VALUES ('{answer_id}', '{question_id}', '{answer}', '{is_correct}', '{explanation}')
             """
 
             self.DB_HANDLER.executeSQL(insert_answer_sql)
@@ -112,6 +114,37 @@ class QuestionHandler:
             "message": "success"
         }
 
+    def get_random_question(self):
+
+        select_all_question: str = """
+            SELECT id, question_text, points FROM Question
+        """
+
+        all_questions_data = self.DB_HANDLER.executeSQL(select_all_question).fetchall()
+        size_questions = len(all_questions_data)
+
+        question_data: tuple = all_questions_data[random.randint(0, size_questions-1)]
+        question_id: str = question_data[0]
+        question_text: str = question_data[1]
+        question_points = question_id[2]
+
+        select_question_answers: str = f"""
+            SELECT answer, is_correct, explanation FROM Answer
+            WHERE question_id = '{question_id}'
+        """
+        question_answers_data: list = self.DB_HANDLER.executeSQL(select_question_answers).fetchall()
+
+        return {
+            "question": question_text,
+            "answers": [
+               {
+                   "answer": row[0],
+                   "isTrue": row[1],
+                   "explanation": row[2]
+               } for row in question_answers_data
+            ],
+            "points": question_points
+        }
 
 # utils function 
 def get_hash(input_string: str) -> str:
