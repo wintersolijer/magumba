@@ -1,7 +1,7 @@
 curl -X POST http://localhost:5000/add_question \
 -H "Content-Type: application/json" \
 -d '{
-        "question": "ist der klimawandel schlecht?",
+        "question": "ist der klimawandel gut?????",
         "answers": [
             {
                 "answer": "ja",

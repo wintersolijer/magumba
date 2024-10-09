@@ -32,7 +32,7 @@ def get_ranking():
     return PEOPLE_HANDLER.get_ranking()
 
 @app.post('/add_question')
-def addQuestion():
+def add_question():
     """
     payload:
     {
@@ -64,3 +64,7 @@ def addQuestion():
     points: int = payload['points']
 
     return QUESTION_HANDLER.add_question(question, answers, points)
+
+@app.get('/get_rand_question')
+def get_rand_question():
+    return QUESTION_HANDLER.get_random_question()
