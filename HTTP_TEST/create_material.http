@@ -3,5 +3,5 @@ curl -X POST http://localhost:5000/create_material \
 -d '{
 "material_name": "testmaterial",
 "course_name": "testkurs",
-"pdf_name": "Nebenhoererschaft"
+"pdf_name": "https://discord.com/material/test.pdf",
 }'
