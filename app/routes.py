@@ -68,3 +68,13 @@ def add_question():
 @app.get('/get_rand_question')
 def get_rand_question():
     return QUESTION_HANDLER.get_random_question()
+
+@app.post('/create_material')
+def create_material():
+    payload = request.json
+
+    material_name: str = payload['material_name']
+    course_name: str = payload['course_name']
+    pdf_name: str = payload['pdf_name']
+
+    return PEOPLE_HANDLER.add_course_material(material_name, course_name, pdf_name)

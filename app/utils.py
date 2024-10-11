@@ -114,6 +114,23 @@ class QuestionHandler:
             "message": "success"
         }
 
+    def add_course_material(self, material: str, course: str, pdf_name: str):
+        material_id: str = get_hash(material)
+        course_id: str = get_hash(course)
+
+        material_path = f"../assets/uplaods/{pdf_name}.pdf"
+
+        with open(material_path, 'rb') as file:
+            pdf_data = file.read()  # Lies die Datei als Binärdaten
+
+
+        insert_material_sql: str = f"""
+            INSERT INTO Material (id, course_id, material_path)
+            VALUES ('{material_id}', '{course_id}', '{pdf_data}')
+        """
+        
+        self.DB_HANDLER.executeSQL(insert_material_sql)
+
     def get_random_question(self):
 
         select_all_question: str = """
