@@ -77,6 +77,52 @@ class PeopleHandler:
             } for person_data in data
         ]
 
+    def get_points(self, id: str) -> dict:
+        sql_get_points = """
+            SELECT points FROM Person WHERE id = ?
+        """
+
+        current_points = self.DB_HANDLER.executeSQL(sql_get_points, (id,)).fetchone()[0]
+        return {
+            "user_id": id,
+            "current_points": current_points
+        }
+
+    def add_points(self, id: str, points: int) -> dict:
+        sql_get_points = """
+            SELECT points FROM Person WHERE id = ?
+        """
+
+        current_points = self.DB_HANDLER.executeSQL(sql_get_points, (id,)).fetchone()
+
+        if current_points is None:
+            return {
+                "code": 404,
+                "message": f"Person with id {id} not found."
+            }
+
+        # Add the new points to the current points
+        new_points = current_points[0] + points
+
+        # SQL statement to update the points
+        sql_update_points = """
+            UPDATE Person
+            SET points = ?
+            WHERE id = ?
+        """
+
+        # Update the points in the database
+        self.DB_HANDLER.executeSQL(sql_update_points, (new_points, id))
+
+        # Commit the changes
+        self.DB_HANDLER.commit()
+
+        return {
+            "code": 200,
+            "message": "points added"
+        }
+
+
 class QuestionHandler:
     def __init__(self):
         self.DB_HANDLER = DbHandler()

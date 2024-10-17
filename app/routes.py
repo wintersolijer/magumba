@@ -8,6 +8,28 @@ def home():
 
 @app.post('/create_person')
 def create_person():
+    """
+    payload: 
+    {
+        "first_name": {
+            "type": "string"
+        },
+        "last_name": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string",
+        },
+        "password": {
+            "type": "string"
+        },
+        "birthday": {
+            "type": "string",
+            "format": "date"
+        }
+    }
+    """
+
     payload = request.json
 
     first_name: str = payload['first_name']
@@ -20,12 +42,61 @@ def create_person():
 
 @app.post('/login')
 def login():
+    """
+    payload: 
+    {
+        "email": {
+            "type": "string",
+        },
+        "password": {
+            "type": "string"
+        }
+    }
+    """
+
     payload = request.json
 
     email: str = payload['email']
     password: str = payload['password']
 
     return PEOPLE_HANDLER.check_login(email, password)
+
+@app.post('/add_points')
+def add_points():
+    """
+    payload: 
+    {
+        "user_id": {
+            "type": "string"
+        },
+        "points": {
+            "type": "integer"
+        }
+    }
+    """
+
+    payload = request.json
+    id: str = payload['user_id']
+    points: int = payload['points']
+
+    return PEOPLE_HANDLER.add_points(id, points)
+
+@app.post('/get_points')
+def get_points():
+    """
+    payload:
+    {
+        "user_id": {
+            "type": "string"
+        }
+    }
+    """
+
+    payload = request.json
+    id: str = payload['user_id']
+
+    return PEOPLE_HANDLER.get_points(id)
+
 
 @app.get('/get_ranking')
 def get_ranking():
