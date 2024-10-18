@@ -1,4 +1,4 @@
-from app import app, PEOPLE_HANDLER, QUESTION_HANDLER
+from app import app, PEOPLE_HANDLER, QUESTION_HANDLER, COURSE_HANDLER
 from flask import render_template, request
 
 
@@ -149,3 +149,22 @@ def create_material():
     pdf_name: str = payload['pdf_name']
 
     return PEOPLE_HANDLER.add_course_material(material_name, course_name, pdf_name)
+
+@app.post('/star_course')
+def add_course_points():
+    """
+    {
+        "course_id": {
+            "type": "string"
+        },
+        "points": {
+            "type": "integer"
+        }
+    }
+    """
+    payload = request.json
+    
+    course_id: str = payload['course_id']
+    points: int = payload['points']
+
+    return COURSE_HANDLER.add_points(course_id, points)

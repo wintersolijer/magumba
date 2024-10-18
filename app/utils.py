@@ -122,7 +122,6 @@ class PeopleHandler:
             "message": "points added"
         }
 
-
 class QuestionHandler:
     def __init__(self):
         self.DB_HANDLER = DbHandler()
@@ -208,3 +207,43 @@ def get_hash(input_string: str) -> str:
     hash_object = hashlib.sha256()
     hash_object.update(input_string.encode('utf-8'))
     return hash_object.hexdigest()
+
+
+class CourseHandler:
+    def __init__(self):
+        self.DB_HANDLER = DbHandler()
+    
+    def add_points(self, course_id: str, points: float) -> dict:
+        sql_get_course = """
+            SELECT rating, num_of_ratings FROM Course WHERE id = ?
+        """
+        
+        course_data = self.DB_HANDLER.executeSQL(sql_get_course, (course_id,)).fetchone()
+
+        if course_data is None:
+            return {
+                "code": 404,
+                "message": f"Course with id {course_id} not found."
+            }
+
+        current_rating, num_of_ratings = course_data
+
+        new_num_of_ratings = num_of_ratings + 1
+        new_rating = ((current_rating * num_of_ratings) + points) / new_num_of_ratings
+
+        sql_update_course = """
+            UPDATE Course
+            SET rating = ?, num_of_ratings = ?
+            WHERE id = ?
+        """
+
+        # Update the course rating in the database
+        self.DB_HANDLER.executeSQL(sql_update_course, (new_rating, new_num_of_ratings, course_id))
+
+        # Commit the changes
+        self.DB_HANDLER.commit()
+
+        return {
+            "code": 200,
+            "message": "Rating updated successfully"
+        }
