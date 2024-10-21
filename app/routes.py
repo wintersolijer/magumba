@@ -120,6 +120,9 @@ def add_question():
                     },
                     "isTrue":{
                         "type": "boolean"
+                    },
+                    "explanation": {
+                        "type": "string"
                     }
                 }
             }
