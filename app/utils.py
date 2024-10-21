@@ -145,7 +145,7 @@ class QuestionHandler:
             is_correct = answer_obj['isTrue']
             answer = answer_obj['answer']
             answer_id = get_hash(answer + question_id)
-            explanation = ""
+            explanation = answer_obj['explanation']
 
             insert_answer_sql = f"""
                 INSERT INTO Answer (id, question_id, answer, is_correct, explanation)
